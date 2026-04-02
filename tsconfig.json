@@ -1,0 +1,12 @@
+{
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@repo/db": ["./packages/db/index.ts"],
+      "@repo/typescript-config/*": ["./packages/typescript-config/*"],
+      "@repo/eslint-config/*": ["./packages/eslint-config/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist", ".next"]
+}
