@@ -5,6 +5,15 @@ import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 
 import { auth } from "../../../lib/firebase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useSyncUserMutation } from "../../../hooks/use-sync-user-mutation";
+
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Something went wrong. Please try again.";
+}
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -12,6 +21,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const syncUserMutation = useSyncUserMutation();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,10 +29,11 @@ export default function LoginPage() {
     setError("");
 
     try {
-      await signInWithEmailAndPassword(auauthth, email, password);
+      await signInWithEmailAndPassword(auth, email, password);
+      await syncUserMutation.mutateAsync({ forceRefreshToken: false });
       router.push("/");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -30,11 +41,17 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
+    setLoading(true);
+    setError("");
+
     try {
       await signInWithPopup(auth, provider);
+      await syncUserMutation.mutateAsync({ forceRefreshToken: false });
       router.push("/");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -118,6 +135,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={handleGoogleLogin}
+              disabled={loading}
               className="flex w-full justify-center items-center gap-2 rounded-lg bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-700 hover:text-white transition-all ring-1 ring-zinc-700"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -138,7 +156,7 @@ export default function LoginPage() {
                   fill="#EA4335"
                 />
               </svg>
-              Google
+              {loading ? "Connecting..." : "Google"}
             </button>
           </div>
         </form>

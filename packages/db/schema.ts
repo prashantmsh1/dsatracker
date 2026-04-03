@@ -12,6 +12,7 @@ import {
 export const users = pgTable("users", {
     id: text("id").primaryKey(), // Firebase Auth UID
     email: text("email").notNull(),
+    displayName: text("display_name"),
     cooldownDays: integer("cooldown_days").default(7).notNull(), // User's 'x' days setting
     createdAt: timestamp("created_at").defaultNow(),
 });
@@ -44,9 +45,7 @@ export const playlistQuestions = pgTable(
         playlistId: integer("playlist_id").references(() => playlists.id, { onDelete: "cascade" }),
         questionId: integer("question_id").references(() => questions.id, { onDelete: "cascade" }),
     },
-    (t) => ({
-        pk: primaryKey({ columns: [t.playlistId, t.questionId] }),
-    }),
+    (t) => [primaryKey({ columns: [t.playlistId, t.questionId] })],
 );
 
 // Optional: To keep a strict history of what was suggested and if they actually solved it
@@ -62,23 +61,21 @@ export const dailyHistory = pgTable("daily_history", {
     isCompleted: boolean("is_completed").default(false),
 });
 
-
-
 export const problems = pgTable("problems", {
-  id: serial("id").primaryKey(),
-  title: varchar("title", { length: 256 }).notNull(),
-  url: text("url").notNull(),
-  difficulty: varchar("difficulty", { length: 20 }).notNull(), // Easy, Medium, Hard
-  category: varchar("category", { length: 100 }),
-  completed: boolean("completed").default(false),
-  notes: text("notes"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+    id: serial("id").primaryKey(),
+    title: varchar("title", { length: 256 }).notNull(),
+    url: text("url").notNull(),
+    difficulty: varchar("difficulty", { length: 20 }).notNull(), // Easy, Medium, Hard
+    category: varchar("category", { length: 100 }),
+    completed: boolean("completed").default(false),
+    notes: text("notes"),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const submissions = pgTable("submissions", {
-  id: serial("id").primaryKey(),
-  problemId: serial("problem_id").references(() => problems.id),
-  status: varchar("status", { length: 50 }),
-  submittedAt: timestamp("submitted_at").defaultNow(),
+    id: serial("id").primaryKey(),
+    problemId: serial("problem_id").references(() => problems.id),
+    status: varchar("status", { length: 50 }),
+    submittedAt: timestamp("submitted_at").defaultNow(),
 });

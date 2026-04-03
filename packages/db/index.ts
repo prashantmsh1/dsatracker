@@ -2,6 +2,7 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 export { type InferSelectModel } from "drizzle-orm";
 
+export * from "drizzle-orm";
 export * from "./schema";
 export const db = drizzle(process.env.DATABASE_URL!);
 

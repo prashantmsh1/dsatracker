@@ -1,4 +1,4 @@
-import { CheckCircle, Circle, ExternalLink, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 
 export default async function Home() {
     return (

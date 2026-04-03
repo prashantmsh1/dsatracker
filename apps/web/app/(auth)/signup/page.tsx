@@ -5,6 +5,15 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../../../lib/firebase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useSyncUserMutation } from "../../../hooks/use-sync-user-mutation";
+
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Something went wrong. Please try again.";
+}
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -13,6 +22,7 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const syncUserMutation = useSyncUserMutation();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,9 +32,10 @@ export default function SignupPage() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
+      await syncUserMutation.mutateAsync({ forceRefreshToken: true });
       router.push("/");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }
