@@ -1,20 +1,23 @@
 {
-  "name": "@repo/db",
-  "version": "0.0.1",
-  "private": true,
-  "main": "./index.ts",
-  "types": "./index.ts",
-  "scripts": {
-    "db:push": "drizzle-kit push:pg",
-    "db:generate": "drizzle-kit generate:pg",
-    "db:studio": "drizzle-kit studio"
-  },
-  "dependencies": {
-    "drizzle-orm": "^0.30.7",
-    "postgres": "^3.4.4"
-  },
-  "devDependencies": {
-    "drizzle-kit": "^0.20.17",
-    "typescript": "^5.4.5"
-  }
+    "name": "@repo/db",
+    "version": "0.0.1",
+    "type": "module",
+    "private": true,
+    "main": "./index.ts",
+    "types": "./index.ts",
+    "scripts": {
+        "db:push": "drizzle-kit push:pg",
+        "db:generate": "drizzle-kit generate:pg",
+        "db:studio": "drizzle-kit studio"
+    },
+    "dependencies": {
+        "drizzle-orm": "^0.45.2",
+        "pg": "^8.20.0",
+        "postgres": "^3.4.4"
+    },
+    "devDependencies": {
+        "@types/pg": "^8.20.0",
+        "drizzle-kit": "^0.31.10",
+        "typescript": "6.0.2"
+    }
 }

@@ -10,9 +10,10 @@
   },
   "dependencies": {
     "@repo/db": "*",
-    "hono": "^4.1.0"
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.12.10"
   },
   "devDependencies": {
-    "typescript": "^5.4.5"
+    "typescript": "6.0.2"
   }
 }
