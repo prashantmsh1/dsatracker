@@ -1,5 +1,4 @@
-import { db, users } from "@repo/db";
-import { eq } from "drizzle-orm";
+import { db, users ,eq} from "@repo/db";
 import { Hono } from "hono";
 import { firebaseAuthMiddleware } from "../middleware/auth";
 import type { AppBindings } from "../types/auth";

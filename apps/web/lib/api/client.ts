@@ -1,4 +1,5 @@
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
+import { auth } from "../firebase";
 
 type ApiErrorPayload = {
   error?: string;
@@ -55,4 +56,18 @@ export async function apiRequest<TResponse>(path: string, init: RequestInit = {}
   }
 
   return payload as TResponse;
+}
+
+export async function getAuthorizationHeader() {
+  const currentUser = auth.currentUser;
+
+  if (!currentUser) {
+    throw new Error("You need to be signed in to perform this action.");
+  }
+
+  const token = await currentUser.getIdToken();
+
+  return {
+    Authorization: `Bearer ${token}`,
+  };
 }

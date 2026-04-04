@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
 import { auth } from "../../../lib/firebase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -59,8 +63,12 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-zinc-950 px-4">
       <div className="w-full max-w-md space-y-8 rounded-2xl bg-zinc-900 p-8 border border-zinc-800 shadow-xl">
         <div className="text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-zinc-100">Welcome back</h2>
-          <p className="mt-2 text-sm text-zinc-400">Please sign in to your account</p>
+          <h2 className="text-3xl font-bold tracking-tight text-zinc-100">
+            Welcome back
+          </h2>
+          <p className="mt-2 text-sm text-zinc-400">
+            Please sign in to your account
+          </p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
@@ -72,7 +80,10 @@ export default function LoginPage() {
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="email-address" className="block text-sm font-medium text-zinc-300">
+              <label
+                htmlFor="email-address"
+                className="block text-sm font-medium text-zinc-300"
+              >
                 Email address
               </label>
               <input
@@ -89,7 +100,10 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-zinc-300">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-zinc-300"
+              >
                 Password
               </label>
               <input
@@ -108,7 +122,10 @@ export default function LoginPage() {
 
           <div className="flex items-center justify-between">
             <div className="text-sm">
-              <a href="#" className="font-medium text-blue-400 hover:text-blue-300">
+              <a
+                href="#"
+                className="font-medium text-blue-400 hover:text-blue-300"
+              >
                 Forgot your password?
               </a>
             </div>
@@ -128,7 +145,9 @@ export default function LoginPage() {
                 <div className="w-full border-t border-zinc-800"></div>
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-zinc-900 px-2 text-zinc-500">Or continue with</span>
+                <span className="bg-zinc-900 px-2 text-zinc-500">
+                  Or continue with
+                </span>
               </div>
             </div>
 
@@ -162,8 +181,11 @@ export default function LoginPage() {
         </form>
 
         <p className="text-center text-sm text-zinc-400">
-          Don't have an account?{" "}
-          <Link href="/signup" className="font-medium text-blue-400 hover:text-blue-300">
+          Don&apos;t have an account?{" "}
+          <Link
+            href="/signup"
+            className="font-medium text-blue-400 hover:text-blue-300"
+          >
             Sign up
           </Link>
         </p>

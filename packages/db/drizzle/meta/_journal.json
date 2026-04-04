@@ -8,6 +8,27 @@
       "when": 1775234604007,
       "tag": "0000_dazzling_madame_masque",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1775243156361,
+      "tag": "0001_purple_kat_farrell",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1775243290932,
+      "tag": "0002_elite_romulus",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1775325648985,
+      "tag": "0003_bumpy_roland_deschain",
+      "breakpoints": true
     }
   ]
 }

@@ -26,8 +26,12 @@ export const questions = pgTable("questions", {
     title: text("title"), // Fetched or manually entered
     description: text("description"),
     notes: text("notes"),
+    difficultyLevel: text("difficulty_level"),
+    category: text("category"), // Added back from problems model
+    completed: boolean("completed").default(false), // Added back from problems model
     lastShownAt: timestamp("last_shown_at"), // To track the 'x' days constraint
     createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const playlists = pgTable("playlists", {
@@ -42,8 +46,8 @@ export const playlists = pgTable("playlists", {
 export const playlistQuestions = pgTable(
     "playlist_questions",
     {
-        playlistId: integer("playlist_id").references(() => playlists.id, { onDelete: "cascade" }),
-        questionId: integer("question_id").references(() => questions.id, { onDelete: "cascade" }),
+        playlistId: integer("playlist_id").references(() => playlists.id, { onDelete: "cascade" }).notNull(),
+        questionId: integer("question_id").references(() => questions.id, { onDelete: "cascade" }).notNull(),
     },
     (t) => [primaryKey({ columns: [t.playlistId, t.questionId] })],
 );
@@ -61,21 +65,21 @@ export const dailyHistory = pgTable("daily_history", {
     isCompleted: boolean("is_completed").default(false),
 });
 
-export const problems = pgTable("problems", {
-    id: serial("id").primaryKey(),
-    title: varchar("title", { length: 256 }).notNull(),
-    url: text("url").notNull(),
-    difficulty: varchar("difficulty", { length: 20 }).notNull(), // Easy, Medium, Hard
-    category: varchar("category", { length: 100 }),
-    completed: boolean("completed").default(false),
-    notes: text("notes"),
-    createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at").defaultNow(),
-});
+// export const problems = pgTable("problems", {
+//     id: serial("id").primaryKey(),
+//     title: varchar("title", { length: 256 }).notNull(),
+//     url: text("url").notNull(),
+//     difficulty: varchar("difficulty", { length: 20 }).notNull(), // Easy, Medium, Hard
+//     category: varchar("category", { length: 100 }),
+//     completed: boolean("completed").default(false),
+//     notes: text("notes"),
+//     createdAt: timestamp("created_at").defaultNow(),
+//     updatedAt: timestamp("updated_at").defaultNow(),
+// });
 
-export const submissions = pgTable("submissions", {
-    id: serial("id").primaryKey(),
-    problemId: serial("problem_id").references(() => problems.id),
-    status: varchar("status", { length: 50 }),
-    submittedAt: timestamp("submitted_at").defaultNow(),
-});
+// export const submissions = pgTable("submissions", {
+//     id: serial("id").primaryKey(),
+//     problemId: serial("problem_id").references(() => problems.id),
+//     status: varchar("status", { length: 50 }),
+//     submittedAt: timestamp("submitted_at").defaultNow(),
+// });
