@@ -4,6 +4,7 @@ import { apiRequest, getAuthorizationHeader } from "./client";
 export type Playlist = {
   id: number;
   name: string;
+  theory: string | null;
   createdAt: string | Date | null;
   problemCount: number;
 };
@@ -46,5 +47,13 @@ export async function addProblemToPlaylist(
 export async function getPlaylistQuestions(playlistId: number) {
   return apiRequest<Problem[]>(`/playlists/${playlistId}/questions`, {
     headers: await getAuthorizationHeader(),
+  });
+}
+
+export async function updatePlaylist(playlistId: number, data: Partial<{ name: string; theory: string }>) {
+  return apiRequest<Playlist>(`/playlists/${playlistId}`, {
+    method: "PATCH",
+    headers: await getAuthorizationHeader(),
+    body: JSON.stringify(data),
   });
 }

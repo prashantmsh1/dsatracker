@@ -13,6 +13,7 @@ export const getPlaylists = async (c: Context<AppBindings>) => {
       .select({
         id: playlists.id,
         name: playlists.name,
+        theory: playlists.theory,
         createdAt: playlists.createdAt,
         problemCount: count(playlistQuestions.questionId),
       })

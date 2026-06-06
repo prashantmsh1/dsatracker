@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ExternalLink, FolderPlus, Search } from "lucide-react";
 import { getPlaylists } from "@/lib/api/playlists";
 import { getProblems } from "@/lib/api/problems";
+import { getCentralProblems } from "@/lib/api/central";
 import { useAuth } from "@/context/AuthContext";
 import { AddToPlaylistDialog } from "@/components/dashboard/add-to-playlist-dialog";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -38,16 +40,39 @@ function getDifficultyBadgeClass(difficulty: string) {
 }
 
 export function ProblemsView() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAuth();
   const [searchValue, setSearchValue] = useState("");
   const [selectedProblemId, setSelectedProblemId] = useState<number | null>(
     null,
   );
+  const [activeTab, setActiveTab] = useState<"my" | "central">("my");
   const deferredSearchValue = useDeferredValue(searchValue);
+
+  const handleViewProblem = (problemId: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("view", "problem");
+    params.set("problemId", problemId.toString());
+    params.set("from", "problems");
+    if (activeTab === "central") {
+      params.set("type", "central");
+    } else {
+      params.delete("type");
+    }
+    router.push(`?${params.toString()}`);
+  };
 
   const problemsQuery = useQuery({
     queryKey: ["problems"],
     queryFn: getProblems,
+    enabled: activeTab === "my",
+  });
+
+  const centralProblemsQuery = useQuery({
+    queryKey: ["central-problems"],
+    queryFn: getCentralProblems,
+    enabled: activeTab === "central",
   });
 
   const playlistsQuery = useQuery({
@@ -57,7 +82,7 @@ export function ProblemsView() {
   });
 
   const normalizedSearchValue = deferredSearchValue.trim().toLowerCase();
-  const problems = problemsQuery.data ?? [];
+  const problems = activeTab === "my" ? (problemsQuery.data ?? []) : (centralProblemsQuery.data ?? []);
   const visibleProblems = problems.filter((problem) => {
     if (!normalizedSearchValue) {
       return true;
@@ -78,7 +103,12 @@ export function ProblemsView() {
     problems.find((problem) => problem.id === selectedProblemId) ??
     null;
 
-  if (problemsQuery.isLoading) {
+  const isLoading = activeTab === "my" ? problemsQuery.isLoading : centralProblemsQuery.isLoading;
+  const isError = activeTab === "my" ? problemsQuery.isError : centralProblemsQuery.isError;
+  const errorObj = activeTab === "my" ? problemsQuery.error : centralProblemsQuery.error;
+  const refetch = activeTab === "my" ? () => problemsQuery.refetch() : () => centralProblemsQuery.refetch();
+
+  if (isLoading) {
     return (
       <section className="space-y-4">
         <div className="flex flex-col gap-3 md:flex-row">
@@ -94,10 +124,10 @@ export function ProblemsView() {
     );
   }
 
-  if (problemsQuery.isError) {
+  if (isError) {
     const message =
-      problemsQuery.error instanceof Error
-        ? problemsQuery.error.message
+      errorObj instanceof Error
+        ? errorObj.message
         : "Unable to load problems right now.";
 
     return (
@@ -107,7 +137,7 @@ export function ProblemsView() {
         <Button
           className="mt-4"
           variant="outline"
-          onClick={() => problemsQuery.refetch()}
+          onClick={refetch}
         >
           Try Again
         </Button>
@@ -152,6 +182,28 @@ export function ProblemsView() {
       </section>
 
       <section className="rounded-xl border bg-card p-5">
+        <div className="flex border-b border-border mb-5 pb-[2px] gap-6">
+          <button
+            onClick={() => setActiveTab("my")}
+            className={`px-1 py-2 text-sm font-semibold border-b-2 -mb-[4px] transition-colors cursor-pointer ${
+              activeTab === "my"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            My Problems
+          </button>
+          <button
+            onClick={() => setActiveTab("central")}
+            className={`px-1 py-2 text-sm font-semibold border-b-2 -mb-[4px] transition-colors cursor-pointer ${
+              activeTab === "central"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Central Problems
+          </button>
+        </div>
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="relative w-full md:max-w-md">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -185,7 +237,19 @@ export function ProblemsView() {
                   <TableRow key={problem.id}>
                     <TableCell className="font-medium whitespace-normal">
                       <div className="max-w-xl">
-                        <p>{problem.title}</p>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleViewProblem(problem.id)}
+                            className="text-left font-semibold text-foreground/90 hover:text-primary transition-colors cursor-pointer hover:underline decoration-primary/30 underline-offset-2"
+                          >
+                            {problem.title}
+                          </button>
+                          {problem.completed && (
+                            <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-none font-bold text-[9px] h-4 py-0 px-1 shrink-0">
+                              Solved
+                            </Badge>
+                          )}
+                        </div>
                         <p className="mt-1 text-xs text-muted-foreground">
                           Problem #{problem.id}
                         </p>
@@ -214,14 +278,18 @@ export function ProblemsView() {
                       </a>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="outline"
-                        onClick={() => setSelectedProblemId(problem.id)}
-                        disabled={authLoading}
-                      >
-                        <FolderPlus />
-                        Add To Playlist
-                      </Button>
+                      {activeTab === "my" ? (
+                        <Button
+                          variant="outline"
+                          onClick={() => setSelectedProblemId(problem.id)}
+                          disabled={authLoading}
+                        >
+                          <FolderPlus />
+                          Add To Playlist
+                        </Button>
+                      ) : (
+                        <span className="text-xs text-muted-foreground italic font-medium px-3">Central Problem</span>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))

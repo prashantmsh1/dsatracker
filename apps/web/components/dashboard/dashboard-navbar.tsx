@@ -18,12 +18,14 @@ type DashboardNavbarProps = {
   title: string;
   options: DashboardNavbarOption[];
   onAddProblemClick?: () => void;
+  onAddPlaylistClick?: () => void;
 };
 
 export function DashboardNavbar({
   title,
   options,
   onAddProblemClick,
+  onAddPlaylistClick,
 }: DashboardNavbarProps) {
   return (
     <header className="sticky top-0 z-20 border-b bg-background/90 px-4 py-3 backdrop-blur md:px-6">
@@ -35,6 +37,18 @@ export function DashboardNavbar({
         </div>
 
         <div className="flex items-center gap-2">
+          {onAddPlaylistClick ? (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onAddPlaylistClick}
+              className="gap-2 border-primary/20 hover:bg-primary/5 hover:text-primary transition-colors"
+            >
+              <Plus className="size-4" />
+              <span className="hidden lg:inline">Create Playlist</span>
+            </Button>
+          ) : null}
+
           {onAddProblemClick ? (
             <Button
               variant="default"

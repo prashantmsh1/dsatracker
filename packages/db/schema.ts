@@ -40,6 +40,7 @@ export const playlists = pgTable("playlists", {
         .references(() => users.id)
         .notNull(),
     name: text("name").notNull(),
+    theory: text("theory"),
     createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -65,21 +66,65 @@ export const dailyHistory = pgTable("daily_history", {
     isCompleted: boolean("is_completed").default(false),
 });
 
-// export const problems = pgTable("problems", {
-//     id: serial("id").primaryKey(),
-//     title: varchar("title", { length: 256 }).notNull(),
-//     url: text("url").notNull(),
-//     difficulty: varchar("difficulty", { length: 20 }).notNull(), // Easy, Medium, Hard
-//     category: varchar("category", { length: 100 }),
-//     completed: boolean("completed").default(false),
-//     notes: text("notes"),
-//     createdAt: timestamp("created_at").defaultNow(),
-//     updatedAt: timestamp("updated_at").defaultNow(),
-// });
+export const centralProblems = pgTable("central_problems", {
+    id: serial("id").primaryKey(),
+    leetcodeUrl: text("leetcode_url").notNull(),
+    title: text("title").notNull(),
+    description: text("description"),
+    difficultyLevel: text("difficulty_level").notNull(), // Easy, Medium, Hard
+    category: text("category").default("General"),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+});
 
-// export const submissions = pgTable("submissions", {
-//     id: serial("id").primaryKey(),
-//     problemId: serial("problem_id").references(() => problems.id),
-//     status: varchar("status", { length: 50 }),
-//     submittedAt: timestamp("submitted_at").defaultNow(),
-// });
+export const centralPlaylists = pgTable("central_playlists", {
+    id: serial("id").primaryKey(),
+    name: text("name").notNull(),
+    description: text("description"),
+    theory: text("theory"),
+    createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const centralPlaylistProblems = pgTable(
+    "central_playlist_problems",
+    {
+        playlistId: integer("playlist_id").references(() => centralPlaylists.id, { onDelete: "cascade" }).notNull(),
+        problemId: integer("problem_id").references(() => centralProblems.id, { onDelete: "cascade" }).notNull(),
+    },
+    (t) => [primaryKey({ columns: [t.playlistId, t.problemId] })],
+);
+
+export const userCentralProblems = pgTable(
+    "user_central_problems",
+    {
+        id: serial("id").primaryKey(),
+        userId: text("user_id").references(() => users.id).notNull(),
+        centralProblemId: integer("central_problem_id").references(() => centralProblems.id, { onDelete: "cascade" }).notNull(),
+        completed: boolean("completed").default(false).notNull(),
+        notes: text("notes").default("").notNull(),
+        lastShownAt: timestamp("last_shown_at"),
+        createdAt: timestamp("created_at").defaultNow(),
+        updatedAt: timestamp("updated_at").defaultNow(),
+    }
+);
+
+export const solvedHistory = pgTable("solved_history", {
+    id: serial("id").primaryKey(),
+    userId: text("user_id").references(() => users.id).notNull(),
+    problemType: text("problem_type").notNull(), // 'user' or 'central'
+    questionId: integer("question_id").references(() => questions.id, { onDelete: "cascade" }), // if problem_type is 'user'
+    centralProblemId: integer("central_problem_id").references(() => centralProblems.id, { onDelete: "cascade" }), // if problem_type is 'central'
+    solvedAt: timestamp("solved_at").defaultNow().notNull(),
+});
+
+export const dailyRecommendations = pgTable(
+    "daily_recommendations",
+    {
+        date: varchar("date", { length: 10 }).notNull(), // "YYYY-MM-DD"
+        centralProblemId: integer("central_problem_id").references(() => centralProblems.id, { onDelete: "cascade" }).notNull(),
+        createdAt: timestamp("created_at").defaultNow().notNull(),
+    },
+    (t) => [primaryKey({ columns: [t.date, t.centralProblemId] })],
+);
+
+

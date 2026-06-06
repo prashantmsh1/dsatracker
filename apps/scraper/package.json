@@ -1,0 +1,20 @@
+{
+  "name": "@repo/scraper",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "scrape": "bun run src/index.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@repo/db": "*",
+    "cheerio": "^1.0.0-rc.12",
+    "playwright": "^1.49.0"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "*",
+    "@types/node": "^22.15.3",
+    "typescript": "6.0.2"
+  }
+}

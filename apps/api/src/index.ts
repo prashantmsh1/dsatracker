@@ -11,7 +11,7 @@ app.use(
     cors({
         origin: process.env.CORS_ORIGIN ?? "http://localhost:3000",
         allowHeaders: ["Authorization", "Content-Type"],
-        allowMethods: ["GET", "POST", "OPTIONS"],
+        allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     }),
 );
 
