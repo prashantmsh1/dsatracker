@@ -127,4 +127,17 @@ export const dailyRecommendations = pgTable(
     (t) => [primaryKey({ columns: [t.date, t.centralProblemId] })],
 );
 
+export const userSettings = pgTable("user_settings", {
+    userId: text("user_id")
+        .primaryKey()
+        .references(() => users.id, { onDelete: "cascade" }),
+    theme: text("theme").default("system").notNull(), // 'light', 'dark', 'system'
+    preferredDifficulty: text("preferred_difficulty").default("all").notNull(), // 'all', 'easy', 'medium', 'hard'
+    dailyTarget: integer("daily_target").default(3).notNull(),
+    weeklyGoal: integer("weekly_goal").default(5).notNull(),
+    cooldownDays: integer("cooldown_days").default(7).notNull(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+
 

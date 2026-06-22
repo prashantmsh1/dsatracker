@@ -36,6 +36,7 @@ import { PlaylistQuestionsView } from "@/components/dashboard/playlist-questions
 import { CreatePlaylistDialog } from "@/components/dashboard/create-playlist-dialog";
 import { ProblemDetailView } from "@/components/dashboard/problem-detail-view";
 import { ProgressView } from "@/components/dashboard/progress-view";
+import { SettingsView } from "@/components/dashboard/settings-view";
 
 const sidebarMenuItems: DashboardSidebarMenuItem[] = [
     { label: "Overview", href: "/dashboard", icon: Home },
@@ -319,6 +320,7 @@ function DashboardPageContent() {
                     {view === "overview" ? <DashboardOverview /> : null}
                     {view === "problems" ? <ProblemsView /> : null}
                     {view === "progress" ? <ProgressView /> : null}
+                    {view === "settings" ? <SettingsView /> : null}
                     {view === "playlists" ? (
                         <PlaylistData
                             onCreatePlaylistClick={() => setIsCreatePlaylistModalOpen(true)}
