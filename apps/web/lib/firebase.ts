@@ -10,8 +10,21 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase for SSR and Client
-const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const hasValidConfig = !!firebaseConfig.apiKey;
+
+let app;
+let auth: any;
+
+if (hasValidConfig) {
+  app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+  auth = getAuth(app);
+} else {
+  // Graceful fallback for static build/prerender environments (e.g. Vercel) where env vars are missing
+  app = null;
+  auth = {
+    currentUser: null,
+  };
+}
 
 export { auth };
+
