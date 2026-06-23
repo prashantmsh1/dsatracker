@@ -18,7 +18,7 @@ app.use(
 app.route("/auth", authRoutes);
 app.route("/", dsaRoutes);
 
-app.get("/", (c) => {
+app.get("/health", (c) => {
     return c.text("DSA Tracker API");
 });
 

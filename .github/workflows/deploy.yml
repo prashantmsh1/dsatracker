@@ -1,0 +1,40 @@
+name: Automated Production Deploy
+
+on:
+  push:
+    branches: [ prod ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute Remote SSH Commands
+        uses: appleboy/ssh-action@master
+        with:
+          host: 136.113.246.90
+          username: prashantkr.msh
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            # 1. Navigate to your app directory
+            cd ~/apps/dsatracker
+            
+            # 2. Reset any accidental lockfiles and pull the exact matching branch
+            git reset --hard HEAD
+            git checkout ${{ github.ref_name }}
+            git pull origin ${{ github.ref_name }}
+            
+            # 3. CRITICAL: Load NVM and Bun environment variables so Linux can find bun, npm, and pm2
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+            
+            export BUN_INSTALL="$HOME/.bun"
+            export PATH="$BUN_INSTALL/bin:$PATH"
+            
+            # 4. Clean workspace install and run database migrations
+            bun install
+            bun --filter @repo/db db:push
+            
+            # 5. Smart PM2 Reload for the API
+            pm2 reload dsatracker-api --update-env
+            pm2 save
